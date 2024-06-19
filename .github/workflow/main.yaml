@@ -1,0 +1,19 @@
+name: ci
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  kubeconform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: login to github packages
+        run: echo "${{ github.token }}" | docker login https://ghcr.io -u ${GITHUB_ACTOR} --password-stdin
+      - name: git checkout
+        uses: actions/checkout@v4
+      - name: run kubeconform
+        uses: docker://ghcr.io/yannh/kubeconform:latest
+        with:
+          entrypoint: '/kubeconform'
+          args: "-summary -output json kubeconfigs/"
