@@ -22,7 +22,7 @@ jobs:
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v1
         with:
-          tofu_version: '1.6.0'  # Specify your desired OpenTofu version
+          tofu_version: '>1.6.0'  # Specify your desired OpenTofu version
 
       - name: OpenTofu Format
         run: tofu fmt -check -recursive
