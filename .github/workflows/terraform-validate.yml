@@ -1,0 +1,48 @@
+name: Terraform/OpenTofu Validate
+
+on:
+  pull_request:
+    paths:
+      - 'tf-bootstrap/**'
+      - '.github/workflows/terraform-validate.yml'
+
+jobs:
+
+  tofu-terraform-validate:
+    name: 'OpenTofu+Checkov'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./tf-bootstrap
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+        with:
+          tofu_version: '>1.6.0'  # Specify your desired OpenTofu version
+
+      - name: OpenTofu Format
+        run: tofu fmt -check -recursive
+
+      - name: OpenTofu Init
+        run: tofu init
+
+      - name: OpenTofu Validate
+        run: tofu validate
+
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Test with Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ./tf-bootstrap
+          framework: terraform
+          skip_check: CKV_GIT_6
+
