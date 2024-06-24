@@ -34,6 +34,26 @@ resource "github_repository" "this" {
   description = var.github_repository
   visibility  = "private"
   auto_init   = true # This is extremely important as flux_bootstrap_git will not work without a repository that has been initialised
+
+  # Enable vulnerability alerts
+  vulnerability_alerts = true
+}
+resource "github_branch_protection" "main" {
+  repository_id = github_repository.this.node_id
+  pattern       = "main"
+
+  required_status_checks {
+    strict   = true
+    contexts = ["validate"]
+  }
+
+  enforce_admins = true
+
+  required_pull_request_reviews {
+    dismiss_stale_reviews           = true
+    require_code_owner_reviews      = true
+    required_approving_review_count = 2 # Updated to 2 approvals
+  }
 }
 
 # ==========================================
