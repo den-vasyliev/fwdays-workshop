@@ -1,0 +1,11 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: workshop-repo
+  namespace: flux-system
+spec:
+  interval: 1m0s
+  url: https://github.com/den-vasyliev/fwdays-workshop
+  branch: main
+  secretRef:
+    name: flux-system
