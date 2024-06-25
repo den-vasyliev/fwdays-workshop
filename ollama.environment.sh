@@ -40,13 +40,15 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/down
 #https://github.com/open-webui/open-webui
 #https://github.com/open-webui/helm-charts
 
+flux install
+
 # Create flux resources for the Ollama project https://github.com/otwld/ollama-helm/blob/main/values.yaml
 
 # dry-run
 flux create source helm ollama-chart --url=https://otwld.github.io/ollama-helm/ --interval=10m --export
 
 # imperative command to create the source
-flux create source helm ollama-chart --url=https://otwld.github.io/ollama-helm/ --interval=10m 
+flux create source helm ollama-chart --url=https://otwld.github.io/ollama-helm/ --interval=10m -n default
 
 # check the resources
 k get helmrepositories.source.toolkit.fluxcd.io -A
