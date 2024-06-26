@@ -34,8 +34,20 @@ variable "machine_type" {
 }
 
 variable "credentials" {
-  description = "The path to the service account key file"
+  description = "Credentials for authentication"
+  type        = string
   sensitive   = true
+  default     = ""
+}
+
+variable "default_credentials_file_path" {
+  description = "Path to the default credentials file"
+  type        = string
+  default     = "~/.config/gcloud/application_default_credentials.json"
+}
+
+locals {
+  credentials = var.credentials != "" ? var.credentials : file(var.default_credentials_file_path)
 }
 
 provider "google" {
