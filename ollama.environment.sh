@@ -2,7 +2,7 @@
 yes|/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"&&eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Install Terraform, Flux, and htop using Homebrew
-yes|brew install kubectx opentofu fluxcd/tap/flux htop kind derailed/k9s/k9s kubeseal
+yes|brew install kubectx opentofu fluxcd/tap/flux htop kind derailed/k9s/k9s
 
 # Initialize kind cluster
 cat <<EOF >> kind-config.yaml
