@@ -33,6 +33,12 @@ variable "machine_type" {
   default     = "e2-medium"
 }
 
+variable "zone" {
+  description = "The zone to deploy resources to"
+  default     = "us-central1-a"
+
+}
+
 variable "credentials" {
   description = "Credentials for authentication"
   type        = string
@@ -53,13 +59,13 @@ locals {
 provider "google" {
   project     = var.project_id
   region      = var.region
-  zone        = var.location
   credentials = var.credentials
 }
 
 resource "google_container_cluster" "primary" {
-  name     = var.cluster_name
-  location = var.location
+  name           = var.cluster_name
+  location       = var.region
+  node_locations = [var.zone]
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
@@ -69,7 +75,7 @@ resource "google_container_cluster" "primary" {
 
   # Enable Workload Identity
   workload_identity_config {
-    workload_pool = "${var.location}.svc.id.goog"
+    workload_pool = "${var.project_id}.svc.id.goog"
   }
 }
 
