@@ -7,20 +7,43 @@ terraform {
   }
 }
 
-locals {
-  project_id = "k8s-k3s"
-
+variable "project_id" {
+  description = "The project ID to deploy resources to" 
 }
 
+variable "location" {
+  description = "The location to deploy resources to"
+  default     = "us-central1-a"
+  
+}
+
+variable "region" {
+  description = "The region to deploy resources to"
+  default     = "us-central1"
+} 
+
+variable "cluster_name" {
+  description = "The name of the GKE cluster"
+  default     = "my-gke-cluster"
+  
+}
+
+variable "credentials" {
+  description = "The path to the service account key file"
+  sensitive = true
+}
+
+
 provider "google" {
-  project = local.project_id
-  region  = "us-central1"
-  zone    = "us-central1-a"
+  project = "${var.project_id}"
+  region  = "${var.region}"
+  zone    = "${var.location}"
+  credentials = "${var.credentials ? var.credentials : file("account.json")}"
 }
 
 resource "google_container_cluster" "primary" {
-  name     = "my-gke-cluster"
-  location = "us-central1-a"
+  name     = "${var.cluster_name}"
+  location = "${var.location}"
 
   # We can't create a cluster with no node pool defined, but we want to only use
   # separately managed node pools. So we create the smallest possible default
@@ -30,7 +53,7 @@ resource "google_container_cluster" "primary" {
 
   # Enable Workload Identity
   workload_identity_config {
-    workload_pool = "${local.project_id}.svc.id.goog"
+    workload_pool = "${var.location}.svc.id.goog"
   }
 }
 
