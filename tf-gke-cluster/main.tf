@@ -7,8 +7,13 @@ terraform {
   }
 }
 
+locals {
+  project_id = "k8s-k3s"
+
+}
+
 provider "google" {
-  project = "k8s-k3s"
+  project = local.project_id
   region  = "us-central1"
   zone    = "us-central1-a"
 }
@@ -25,7 +30,7 @@ resource "google_container_cluster" "primary" {
 
   # Enable Workload Identity
   workload_identity_config {
-    workload_pool = "${var.project_id}.svc.id.goog"
+    workload_pool = "${local.project_id}.svc.id.goog"
   }
 }
 
