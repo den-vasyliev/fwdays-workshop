@@ -2,7 +2,7 @@
 yes|/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"&&eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 
 # Install Terraform, Flux, and htop using Homebrew
-yes|brew install kubectx opentofu fluxcd/tap/flux htop kind derailed/k9s/k9s
+yes|brew install kubectx opentofu fluxcd/tap/flux htop kind derailed/k9s/k9s kubeseal
 
 # Initialize kind cluster
 cat <<EOF >> kind-config.yaml
@@ -59,11 +59,24 @@ flux create hr ollama -n default --interval=10m --source=HelmRepository/ollama-c
 # check the resources
 flux stats
 
+#add sealed-secrets controller 
+kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.0/controller.yaml
+
+#install kubeseal manager
+brew install kubeseal
+
+kubectl create secret generic openwebui-secret-values --from-file=values.yaml=./values.yaml --dry-run=client -o yaml > openwebui-secret.yaml
+kubeseal < openwebui-secret.yaml > mysealedsecret.yaml
+kubectl apply -f mysealedsecret.yaml
+
 # openwebui 
 # copy values.yaml https://github.com/open-webui/helm-charts/blob/main/charts/open-webui/values.yaml
-# create secret with values.yaml
-k create secret generic openwebui-secret-values --from-file=values.yaml=../values.yaml
-k describe secrets openwebui-secret-values
+# create sealedsecret with values.yaml
+
+kubectl create secret generic openwebui-secret-values --from-file=values.yaml=./values.yaml --dry-run=client -o yaml > openwebui-secret.yaml
+kubeseal < openwebui-secret.yaml > mysealedsecret.yaml
+kubectl apply -f mysealedsecret.yaml
+
 # create git source
 flux create source git -n default openwebui --url=https://github.com/open-webui/helm-charts --branch=main
 # create helm release
