@@ -33,12 +33,11 @@ variable "credentials" {
   sensitive = true
 }
 
-
 provider "google" {
   project = "${var.project_id}"
   region  = "${var.region}"
   zone    = "${var.location}"
-  credentials = "${var.credentials ? var.credentials : file("account.json")}"
+  credentials = "${var.credentials}"
 }
 
 resource "google_container_cluster" "primary" {
