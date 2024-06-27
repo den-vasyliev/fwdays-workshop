@@ -1,0 +1,10 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: tls-keys-gr
+  namespace: flux-system
+spec:
+  interval: 30s
+  url: https://github.com/den-vasyliev/tf-hashicorp-tls-keys
+  ref:
+    branch: main
