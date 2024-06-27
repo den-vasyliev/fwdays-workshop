@@ -146,8 +146,3 @@ resource "google_container_node_pool" "gpu_pool" {
     }
   }
 }
-
-resource "google_service_account" "default" {
-  account_id   = "service-account-id"
-  display_name = "Service Account"
-}
