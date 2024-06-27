@@ -97,7 +97,7 @@ resource "google_container_node_pool" "cpu_pool" {
 
 }
 resource "google_container_node_pool" "gpu_pool" {
-  name       = google_container_cluster.primary.name
+  name       = "gpu-pool"
   location   = var.region
   cluster    = google_container_cluster.primary.name
   node_count = 0
