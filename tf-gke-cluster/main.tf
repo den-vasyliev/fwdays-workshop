@@ -24,7 +24,7 @@ variable "region" {
 
 variable "cluster_name" {
   description = "The name of the GKE cluster"
-  default     = "my-gke-cluster"
+  default     = "fw-gke-cluster"
 
 }
 
@@ -81,7 +81,7 @@ resource "google_container_cluster" "primary" {
 
 resource "google_container_node_pool" "cpu_pool" {
   name       = "cpu-pool"
-  location   = var.location
+  location   = var.region
   cluster    = google_container_cluster.primary.name
   node_count = 2
 
