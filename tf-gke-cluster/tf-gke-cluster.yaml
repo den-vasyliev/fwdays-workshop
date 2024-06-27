@@ -16,6 +16,6 @@ spec:
     value: k8s-k3s
   varsFrom:
   - kind: Secret
-    name: k8s-k3s-secret
+    name: gcp-auth-secret
     varsKeys:
     - credentials
