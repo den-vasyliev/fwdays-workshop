@@ -86,7 +86,6 @@ resource "google_container_node_pool" "cpu_pool" {
   node_count = 2
 
   node_config {
-    preemptible  = true
     machine_type = var.machine_type
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
