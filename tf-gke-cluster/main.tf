@@ -87,9 +87,9 @@ resource "google_container_node_pool" "cpu_pool" {
 
   node_config {
     machine_type = var.machine_type
+    disk_size_gb = "30"
+    disk_type    = "pd-standard"
 
-    # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
-    service_account = google_service_account.default.email
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
@@ -97,51 +97,53 @@ resource "google_container_node_pool" "cpu_pool" {
 
 }
 resource "google_container_node_pool" "gpu_pool" {
-  name     = "gpu-pool"
-  location = "us-central1-a"
-  cluster  = google_container_cluster.primary.name
-
-  initial_node_count = 0
+  name       = google_container_cluster.primary.name
+  location   = var.region
+  cluster    = google_container_cluster.primary.name
+  node_count = 0
 
   autoscaling {
-    min_node_count = 0
-    max_node_count = 1
+    total_min_node_count = "0"
+    total_max_node_count = "1"
+  }
+
+  management {
+    auto_repair  = "true"
+    auto_upgrade = "true"
   }
 
   node_config {
-    machine_type = "n1-standard-4"
+    oauth_scopes = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/trace.append",
+      "https://www.googleapis.com/auth/service.management.readonly",
+      "https://www.googleapis.com/auth/servicecontrol",
+    ]
+
+    labels = {
+      env = var.project_id
+    }
 
     guest_accelerator {
       type  = "nvidia-tesla-t4"
       count = 1
+      gpu_driver_installation_config {
+        gpu_driver_version = "DEFAULT"
+      }
     }
 
-    service_account = google_service_account.default.email
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform"
-    ]
+    image_type   = "cos_containerd"
+    machine_type = var.machine_type
+    tags         = ["gke-node", "${var.project_id}-gke"]
+
+    disk_size_gb = "30"
+    disk_type    = "pd-standard"
 
     metadata = {
-      install-nvidia-driver = "true"
+      disable-legacy-endpoints = "true"
     }
-
-    labels = {
-      "cloud.google.com/gke-accelerator" = "nvidia-tesla-t4"
-    }
-
-    taint {
-      key    = "nvidia.com/gpu"
-      value  = "present"
-      effect = "NO_SCHEDULE"
-    }
-
-    # Use spot instances
-    spot = true
-  }
-
-  management {
-    auto_repair  = true
-    auto_upgrade = true
   }
 }
 
