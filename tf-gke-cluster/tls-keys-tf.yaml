@@ -1,0 +1,15 @@
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: tls-keys-tf
+  namespace: flux-system
+spec:
+  approvePlan: "" # or you can omit this field
+  interval: 1h
+  path: ./
+  sourceRef:
+    kind: GitRepository
+    name: tls-keys-gr
+    namespace: flux-system
+  writeOutputsToSecret:
+    name: tls-keys-output
