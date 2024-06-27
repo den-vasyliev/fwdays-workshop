@@ -1,0 +1,21 @@
+apiVersion: infra.contrib.fluxcd.io/v1alpha2
+kind: Terraform
+metadata:
+  name: gke-cluster
+  namespace: flux-system
+spec:
+  approvePlan: ""
+  interval: 1m
+  path: ./tf-gke-cluster
+  sourceRef:
+    kind: GitRepository
+    name: tf-config
+    namespace: flux-system
+  vars:
+  - name: project_id
+    value: k8s-k3s
+  varsFrom:
+  - kind: Secret
+    name: k8s-k3s-secret
+    varsKeys:
+    - credentials
