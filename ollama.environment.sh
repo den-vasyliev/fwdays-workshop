@@ -40,13 +40,15 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/down
 #https://github.com/open-webui/open-webui
 #https://github.com/open-webui/helm-charts
 
+flux install
+
 # Create flux resources for the Ollama project https://github.com/otwld/ollama-helm/blob/main/values.yaml
 
 # dry-run
 flux create source helm ollama-chart --url=https://otwld.github.io/ollama-helm/ --interval=10m --export
 
 # imperative command to create the source
-flux create source helm ollama-chart --url=https://otwld.github.io/ollama-helm/ --interval=10m 
+flux create source helm ollama-chart --url=https://otwld.github.io/ollama-helm/ --interval=10m -n default
 
 # check the resources
 k get helmrepositories.source.toolkit.fluxcd.io -A
@@ -57,11 +59,24 @@ flux create hr ollama -n default --interval=10m --source=HelmRepository/ollama-c
 # check the resources
 flux stats
 
+#add sealed-secrets controller 
+kubectl apply -f https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.27.0/controller.yaml
+
+#install kubeseal manager
+brew install kubeseal
+
+kubectl create secret generic openwebui-secret-values --from-file=values.yaml=./values.yaml --dry-run=client -o yaml > openwebui-secret.yaml
+kubeseal < openwebui-secret.yaml > mysealedsecret.yaml
+kubectl apply -f mysealedsecret.yaml
+
 # openwebui 
 # copy values.yaml https://github.com/open-webui/helm-charts/blob/main/charts/open-webui/values.yaml
-# create secret with values.yaml
-k create secret generic openwebui-secret-values --from-file=values.yaml=../values.yaml
-k describe secrets openwebui-secret-values
+# create sealedsecret with values.yaml
+
+kubectl create secret generic openwebui-secret-values --from-file=values.yaml=./values.yaml --dry-run=client -o yaml > openwebui-secret.yaml
+kubeseal < openwebui-secret.yaml > mysealedsecret.yaml
+kubectl apply -f mysealedsecret.yaml
+
 # create git source
 flux create source git -n default openwebui --url=https://github.com/open-webui/helm-charts --branch=main
 # create helm release
