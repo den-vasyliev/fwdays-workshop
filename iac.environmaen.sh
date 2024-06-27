@@ -64,7 +64,7 @@ k create secret generic sops-age \
 --from-file=age.agekey=/dev/stdin
 
 ## Export the public key
-AGE_PUB_KEY=age1luqthsd4r5wc09l989s5yuudcrxfkrd9fka502vqvylk3xa29e9qkre4n3
+AGE_PUB_KEY=age1lxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
 # Create a Kubernetes secret for GCP authentication
@@ -72,7 +72,7 @@ AGE_PUB_KEY=age1luqthsd4r5wc09l989s5yuudcrxfkrd9fka502vqvylk3xa29e9qkre4n3
 ## Create a service account key
 ## Create a Kubernetes secret for the service account key
 
-k create secret -n flux-system  generic k8s-k3s-secret --from-file=credentials=../../k8s-k3s-2cbd0214240e.json -o yaml --dry-run=client>k8s-k3s-secret.yaml
+k create secret -n flux-system  generic k8s-k3s-secret --from-file=credentials=../../GCP_PROJECT.json -o yaml --dry-run=client>gcp-auth-secret.yaml
 
 ## Encrypt the secret using SOPS and the age key
 sops --age=$AGE_PUB_KEY --encrypt --encrypted-regex '^(data|stringData)$' --in-place gcp-auth-secret.yaml
