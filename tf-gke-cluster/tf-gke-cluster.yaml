@@ -4,7 +4,7 @@ metadata:
   name: gke-cluster
   namespace: flux-system
 spec:
-  approvePlan: ""
+  approvePlan: "plan-tf-controller-eeb851deaa"
   interval: 1m
   path: ./tf-gke-cluster
   sourceRef:
