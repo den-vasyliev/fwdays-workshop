@@ -135,7 +135,7 @@ resource "google_container_node_pool" "gpu_pool" {
     }
 
     image_type   = "cos_containerd"
-    machine_type = var.machine_type
+    machine_type = "n1-standard-4"
     tags         = ["gke-node", "${var.project_id}-gke"]
 
     disk_size_gb = "30"
